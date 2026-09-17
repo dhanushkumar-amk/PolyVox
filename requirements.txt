@@ -1,4 +1,6 @@
+numpy==2.5.3
 packaging==26.3
 python-dotenv==1.2.3
 setuptools==84.0.0
+soundfile==0.14.0
 wheel==0.48.0

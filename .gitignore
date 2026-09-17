@@ -15,8 +15,10 @@ __pycache__/
 .env.*
 
 # Local user audio data and voice embeddings
-data/audio/*
-!data/audio/.gitkeep
+data/uploads/*
+!data/uploads/.gitkeep
+data/outputs/*
+!data/outputs/.gitkeep
 data/embeddings/*
 !data/embeddings/.gitkeep
 
