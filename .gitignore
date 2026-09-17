@@ -1,0 +1,36 @@
+# Python virtual environment
+venv/
+.venv/
+env/
+ENV/
+
+# Python bytecode and cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Environment variables and secrets
+.env
+.env.*
+
+# Local user audio data and voice embeddings
+data/audio/*
+!data/audio/.gitkeep
+data/embeddings/*
+!data/embeddings/.gitkeep
+
+# IDEs & code editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Testing and coverage
+.pytest_cache/
+.coverage
+htmlcov/
