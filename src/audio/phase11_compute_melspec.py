@@ -14,6 +14,32 @@ if not DEFAULT_AUDIO_PATH.exists():
     DEFAULT_AUDIO_PATH = BASE_DIR / "data" / "uploads" / "sample.wav"
 
 
+def compute_melspec_db(
+    audio: np.ndarray,
+    sr: int,
+    n_mels: int = 128,
+    n_fft: int = 1024,
+    hop_length: int = 512,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Reusable function to compute a Mel Spectrogram and its Decibel (dB) representation
+
+    directly from a NumPy audio array and sample rate.
+
+    Returns:
+        tuple of (raw_melspec, db_melspec)
+    """
+    raw_melspec = librosa.feature.melspectrogram(
+        y=audio,
+        sr=sr,
+        n_fft=n_fft,
+        hop_length=hop_length,
+        n_mels=n_mels,
+        power=2.0,
+    )
+    db_melspec = librosa.power_to_db(raw_melspec, ref=np.max)
+    return raw_melspec, db_melspec
+
+
 def compute_mel_spectrogram(
     audio_path: Union[Path, str] = DEFAULT_AUDIO_PATH,
     n_mels: int = 128,
@@ -47,26 +73,16 @@ def compute_mel_spectrogram(
     print(f"  Sample Rate:  {sr:,} Hz")
     print(f"  Total Audio:  {len(y):,} samples ({duration:.2f} seconds)\n")
 
-    # Step 2: Compute Mel Spectrogram (Linear Energy / Power scale)
-    # librosa divides the audio into small overlapping windows (frames of length n_fft,
-    # advancing by hop_length), extracts frequencies, and groups them into n_mels bands.
+    # Step 2: Compute Mel Spectrogram using reusable function
     print(f"Computing Mel Spectrogram with {n_mels} Mel bins, hop_length={hop_length}...")
-    raw_melspec = librosa.feature.melspectrogram(
-        y=y,
+    raw_melspec, db_melspec = compute_melspec_db(
+        audio=y,
         sr=sr,
+        n_mels=n_mels,
         n_fft=n_fft,
         hop_length=hop_length,
-        n_mels=n_mels,
-        power=2.0,  # Power spectrogram (squared magnitude)
     )
-
-    # Step 3: Convert Power Spectrogram to Decibel (dB) Scale
-    # Human perception of loudness is logarithmic, not linear.
-    # Raw power numbers span huge orders of magnitude (e.g. 1e-7 to 100+).
-    # librosa.power_to_db applies 10 * log10(S / max(S)) to compress this
-    # into a manageable, perceptually meaningful decibel scale (0 dB to ~ -80 dB).
     print("Converting raw power values to logarithmic Decibel (dB) scale...")
-    db_melspec = librosa.power_to_db(raw_melspec, ref=np.max)
 
     # Step 4: Explain the Shape and Dimensions
     n_bins, n_frames = db_melspec.shape
